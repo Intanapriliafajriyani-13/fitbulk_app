@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/task.dart';
 
-/// Pemilih prioritas untuk form (bab 6): deretan ChoiceChip dalam Wrap.
-///
-/// Custom widget kecil dengan API minimal: satu data masuk ([selected]),
-/// satu event keluar ([onSelected]). Callback opsional: widget tetap
-/// bisa menampilkan pilihan tanpa handler (mis. mode baca).
 class PrioritySelector extends StatelessWidget {
   const PrioritySelector({
     super.key,
@@ -14,8 +9,8 @@ class PrioritySelector extends StatelessWidget {
     this.onSelected,
   });
 
-  final Priority selected;
-  final ValueChanged<Priority>? onSelected;
+  final PriorityLevel selected;
+  final ValueChanged<PriorityLevel>? onSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +18,7 @@ class PrioritySelector extends StatelessWidget {
       spacing: 8,
       runSpacing: 4,
       children: [
-        for (final priority in Priority.values)
+        for (final priority in PriorityLevel.values)
           ChoiceChip(
             label: Text(priority.label),
             selected: selected == priority,

@@ -3,16 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/task.dart';
 import 'task_card_summary.dart';
 
-/// Kartu tugas kanonik (bab 5, delta bab 6).
-///
-/// Kontrak yang dipertahankan lintas bab:
-/// - menampilkan satu [Task]: judul, prioritas, tenggat, status selesai;
-/// - [onToggle] dipanggil checkbox berubah, [onTap] saat kartu ditekan;
-/// - stateless: tidak memegang state dan tidak tahu cara memperoleh data.
-///
-/// Delta bab 6: isi kartu diekstrak ke [TaskCardSummary] dan label
-/// tenggat dipromosikan menjadi widget publik DueDateLabel: cangkang
-/// kartu kini murni komposisi, bukan tumpukan kode.
 class TaskCard extends StatelessWidget {
   const TaskCard({
     super.key,
@@ -21,26 +11,26 @@ class TaskCard extends StatelessWidget {
     required this.onTap,
   });
 
-  final Task task;
+  final BulkingTask task;
   final ValueChanged<bool?> onToggle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 10),
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.all(12),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Checkbox(
-                value: task.done,
+                value: task.isCompleted,
                 onChanged: onToggle,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),

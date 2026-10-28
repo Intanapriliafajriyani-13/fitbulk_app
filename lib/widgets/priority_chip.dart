@@ -5,23 +5,23 @@ import '../models/task.dart';
 class PriorityChip extends StatelessWidget {
   const PriorityChip({super.key, required this.priority});
 
-  final Priority priority;
+  final PriorityLevel priority;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final (Color bg, Color text) = switch (priority) {
-      Priority.high => (
-          theme.colorScheme.errorContainer,
-          theme.colorScheme.onErrorContainer
+      PriorityLevel.high => (
+          Colors.red.shade100,
+          Colors.red.shade900,
         ),
-      Priority.medium => (
-          theme.colorScheme.secondaryContainer,
-          theme.colorScheme.onSecondaryContainer
+      PriorityLevel.medium => (
+          Colors.orange.shade100,
+          Colors.orange.shade900,
         ),
-      Priority.low => (
+      PriorityLevel.low => (
           theme.colorScheme.surfaceContainerHighest,
-          theme.colorScheme.onSurfaceVariant
+          theme.colorScheme.onSurfaceVariant,
         ),
     };
 
