@@ -5,7 +5,16 @@ import '../models/task_repository.dart';
 import '../widgets/fade_in.dart';
 import '../widgets/task_card.dart';
 import 'add_task_screen.dart';
+import 'task_detail_screen.dart';
 
+/// Layar Daftar Target Bulking (Layar ke-1 dari 3 screen utama).
+///
+/// Menerapkan:
+/// - Breakpoint adaptif ruang (LayoutBuilder: horizontal padding 12dp < 600dp, 48dp >= 600dp)
+/// - Interaksi geser-hapus `Dismissible` dengan `confirmDismiss` dialog tonal M3
+/// - Navigasi ke `TaskDetailScreen` dan `AddTaskScreen` via Navigator
+/// - State lokal dikelola dengan `setState`
+/// - Fondasi aksesibilitas (ExcludeSemantics, Tooltip)
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key, required this.repository});
 
@@ -49,83 +58,138 @@ class _TaskListScreenState extends State<TaskListScreen> {
     if (saved == true && mounted) {
       await _load();
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Agenda FitBulk berhasil disimpan!'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            const SnackBar(
+              content: Text('Target FitBulk berhasil ditambahkan!'),
+              behavior: SnackBarBehavior.floating,
+              duration: Duration(seconds: 2),
+            ),
+          );
       }
     }
   }
 
-  void _showTaskDetail(BulkingTask task) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+  Future<void> _openDetail(BulkingTask task) async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (context) => TaskDetailScreen(
+          task: task,
+          repository: widget.repository,
+        ),
       ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
+    );
+    if (changed == true && mounted) {
+      await _load();
+    }
+  }
+
+  Future<bool> _confirmDelete(BulkingTask task) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        final scheme = Theme.of(dialogContext).colorScheme;
+        return AlertDialog(
+          title: const Text('Hapus target bulking?'),
+          content: Text('Target "${task.title}" akan dihapus dari daftar.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Batal'),
+            ),
+            FilledButton.tonal(
+              style: FilledButton.styleFrom(
+                backgroundColor: scheme.errorContainer,
+                foregroundColor: scheme.onErrorContainer,
+              ),
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
+    return confirmed ?? false;
+  }
+
+  Future<void> _delete(BulkingTask task) async {
+    await widget.repository.delete(task.id);
+    await _load();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        const SnackBar(
+          content: Text('Target berhasil dihapus'),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+  }
+
+  Widget _buildDismissible(BulkingTask task) {
+    final scheme = Theme.of(context).colorScheme;
+    return Dismissible(
+      key: ValueKey(task.id),
+      direction: DismissDirection.endToStart,
+      background: DecoratedBox(
+        decoration: BoxDecoration(
+          color: scheme.errorContainer,
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+        ),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: ExcludeSemantics(
+              child: Icon(
+                Icons.delete_outline,
+                color: scheme.onErrorContainer,
+              ),
+            ),
+          ),
+        ),
+      ),
+      confirmDismiss: (_) => _confirmDelete(task),
+      onDismissed: (_) => _delete(task),
+      child: TaskCard(
+        task: task,
+        onToggle: (v) => _toggle(task, v),
+        onTap: () => _openDetail(task),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    final scheme = Theme.of(context).colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    task.title,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.red),
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    await widget.repository.delete(task.id);
-                    await _load();
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.verified, color: Colors.green, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Kategori: ${task.category.label}',
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (task.calories != null || task.protein != null) ...[
-              Text(
-                'Nutrisi: ${task.calories ?? 0} kcal | ${task.protein ?? 0}g protein',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-            ],
-            Text(
-              task.note?.isNotEmpty == true
-                  ? task.note!
-                  : 'Tidak ada catatan komposisi tambahan.',
-              style: Theme.of(context).textTheme.bodyMedium,
+            Icon(
+              Icons.fitness_center_outlined,
+              size: 72,
+              color: scheme.outline,
             ),
             const SizedBox(height: 16),
+            Text(
+              'Belum ada target bulking',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: scheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tekan tombol + di bawah untuk menambah agenda makan atau latihan bebas laktosa.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+            ),
           ],
         ),
       ),
@@ -134,6 +198,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final pending = _tasks.where((t) => !t.isCompleted).toList();
     final totalCalories = _tasks
         .where((t) => t.isCompleted && t.calories != null)
@@ -144,11 +210,13 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.fitness_center, color: Colors.green),
-            SizedBox(width: 10),
-            Text('FitBulk — Nutrition & Workout'),
+            ExcludeSemantics(
+              child: Icon(Icons.fitness_center, color: scheme.primary),
+            ),
+            const SizedBox(width: 10),
+            const Text('FitBulk — Nutrition & Workout'),
           ],
         ),
       ),
@@ -157,13 +225,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
           : FadeIn(
               child: Column(
                 children: [
-                  // Banner Progres Kalori & Protein Hari ini
+                  // Banner Nutrisi Progres Terpenuhi Hari Ini
                   Container(
                     margin: const EdgeInsets.all(12),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.green.shade700, Colors.teal.shade800],
+                        colors: [
+                          scheme.primary,
+                          scheme.secondary,
+                        ],
                       ),
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -172,33 +243,43 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       children: [
                         Column(
                           children: [
-                            const Text(
+                            Text(
                               'Kalori Terpenuhi',
-                              style: TextStyle(color: Colors.white70, fontSize: 12),
+                              style: TextStyle(
+                                color: scheme.onPrimary.withValues(alpha: 0.8),
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '$totalCalories kcal',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: scheme.onPrimary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
                             ),
                           ],
                         ),
-                        Container(width: 1, height: 35, color: Colors.white30),
+                        Container(
+                          width: 1,
+                          height: 35,
+                          color: scheme.onPrimary.withValues(alpha: 0.3),
+                        ),
                         Column(
                           children: [
-                            const Text(
+                            Text(
                               'Protein Masuk',
-                              style: TextStyle(color: Colors.white70, fontSize: 12),
+                              style: TextStyle(
+                                color: scheme.onPrimary.withValues(alpha: 0.8),
+                                fontSize: 12,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               '$totalProtein g',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: scheme.onPrimary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
                               ),
@@ -209,24 +290,24 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     ),
                   ),
 
-                  // Daftar Tugas
+                  // Daftar Tugas dengan Breakpoint Responsif Ruang Tersedia
                   Expanded(
                     child: _tasks.isEmpty
-                        ? const Center(
-                            child: Text('Belum ada target. Tekan + untuk menambah.'),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            itemCount: _tasks.length,
-                            itemBuilder: (context, index) {
-                              final task = _tasks[index];
-                              return TaskCard(
-                                task: task,
-                                onToggle: (v) => _toggle(task, v),
-                                onTap: () => _showTaskDetail(task),
+                        ? _buildEmptyState()
+                        : LayoutBuilder(
+                            builder: (context, constraints) {
+                              // Breakpoint berbasis ruang tersedia, bukan jenis perangkat:
+                              // margin sempit di ponsel potret (< 600dp), lebar di tablet/landscape (>= 600dp)
+                              final horizontal =
+                                  constraints.maxWidth < 600 ? 12.0 : 48.0;
+                              return ListView.builder(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: horizontal,
+                                  vertical: 4,
+                                ),
+                                itemCount: _tasks.length,
+                                itemBuilder: (context, index) =>
+                                    _buildDismissible(_tasks[index]),
                               );
                             },
                           ),
@@ -249,9 +330,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        tooltip: 'Tambah target bulking',
         onPressed: _openAddScreen,
-        backgroundColor: Colors.green.shade700,
-        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('Tambah Target'),
       ),

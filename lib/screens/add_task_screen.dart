@@ -4,6 +4,13 @@ import '../models/task.dart';
 import '../models/task_repository.dart';
 import '../widgets/priority_selector.dart';
 
+/// Layar Tambah Target Bulking (Layar ke-3 dari 3 screen utama).
+///
+/// Menerapkan:
+/// - Layout adaptif: `Center + ConstrainedBox(maxWidth: 600)`
+/// - Form dengan validasi, state error, text scaling tahan (RichText)
+/// - Siklus hidup FocusNode dan TextEditingController yang dibersihkan di `dispose()`
+/// - State dikelola dengan `setState`
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key, required this.repository});
 
@@ -111,31 +118,36 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   padding: const EdgeInsets.all(14),
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
+                    color: scheme.primaryContainer.withValues(alpha: 0.35),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.green.shade200),
+                    border: Border.all(
+                      color: scheme.primary.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.eco, color: Colors.green.shade700, size: 28),
+                      ExcludeSemantics(
+                        child: Icon(Icons.eco, color: scheme.primary, size: 28),
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text.rich(
                           TextSpan(
                             style: TextStyle(
                               fontSize: 13.5,
-                              color: Colors.green.shade900,
+                              color: scheme.onSurface,
                               height: 1.4,
                             ),
-                            children: const [
+                            children: [
                               TextSpan(
                                 text: 'FitBulk Allergen & Muscle Guard\n',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 15,
+                                  color: scheme.primary,
                                 ),
                               ),
-                              TextSpan(
+                              const TextSpan(
                                 text:
                                     'Pastikan asupan nutrisi bebas laktosa dan target surplus kalori tercatat dengan disiplin.',
                               ),
@@ -154,11 +166,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     TextSpan(
                       text: 'Kategori Agenda ',
                       style: theme.textTheme.titleSmall,
-                      children: const [
+                      children: [
                         TextSpan(
                           text: '*',
                           style: TextStyle(
-                            color: Colors.red,
+                            color: scheme.error,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -191,11 +203,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     TextSpan(
                       text: 'Nama Tugas / Menu / Latihan ',
                       style: theme.textTheme.titleSmall,
-                      children: const [
+                      children: [
                         TextSpan(
                           text: '*',
                           style: TextStyle(
-                            color: Colors.red,
+                            color: scheme.error,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -249,11 +261,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             focusNode: _caloriesFocus,
                             keyboardType: TextInputType.number,
                             textInputAction: TextInputAction.next,
-                            onFieldSubmitted: (_) => _proteinFocus.requestFocus(),
+                            onFieldSubmitted: (_) =>
+                                _proteinFocus.requestFocus(),
                             decoration: const InputDecoration(
                               hintText: 'Misal: 550',
-                              prefixIcon: Icon(Icons.local_fire_department,
-                                  color: Colors.orange),
+                              prefixIcon: Icon(Icons.local_fire_department),
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -290,8 +302,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             onFieldSubmitted: (_) => _noteFocus.requestFocus(),
                             decoration: const InputDecoration(
                               hintText: 'Misal: 35',
-                              prefixIcon:
-                                  Icon(Icons.fitness_center, color: Colors.green),
+                              prefixIcon: Icon(Icons.fitness_center),
                               border: OutlineInputBorder(),
                             ),
                           ),
@@ -393,8 +404,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       : const Icon(Icons.check_circle_outline),
                   label: Text(_saving ? 'Menyimpan…' : 'Simpan ke FitBulk Tracker'),
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.green.shade700,
-                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),

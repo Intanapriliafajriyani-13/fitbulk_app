@@ -34,7 +34,9 @@ class TaskCardSummary extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(_getCategoryIcon(task.category), size: 16, color: scheme.primary),
+            ExcludeSemantics(
+              child: Icon(_getCategoryIcon(task.category), size: 16, color: scheme.primary),
+            ),
             const SizedBox(width: 6),
             Text(
               task.category.label,
@@ -74,6 +76,7 @@ class TaskCardSummary extends StatelessWidget {
           ),
         ],
         const SizedBox(height: 6),
+        // Wrap, bukan Row: saat text scale besar, label turun ke baris berikutnya
         Wrap(
           spacing: 8,
           runSpacing: 4,
@@ -84,7 +87,7 @@ class TaskCardSummary extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade100,
+                  color: scheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -92,7 +95,7 @@ class TaskCardSummary extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Colors.amber.shade900,
+                    color: scheme.onSecondaryContainer,
                   ),
                 ),
               ),
@@ -100,7 +103,7 @@ class TaskCardSummary extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.green.shade100,
+                  color: scheme.primaryContainer,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -108,7 +111,7 @@ class TaskCardSummary extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green.shade900,
+                    color: scheme.onPrimaryContainer,
                   ),
                 ),
               ),

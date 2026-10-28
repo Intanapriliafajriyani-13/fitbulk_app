@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../models/task.dart';
 
+/// Chip prioritas tugas: memetakan prioritas ke pasangan peran warna
+/// container/onContainer yang kontrasnya dijamin sistem M3, bukan warna
+/// hardcode (Langkah 1.2 Bab 5).
 class PriorityChip extends StatelessWidget {
   const PriorityChip({super.key, required this.priority});
 
@@ -9,34 +12,31 @@ class PriorityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final (Color bg, Color text) = switch (priority) {
-      PriorityLevel.high => (
-          Colors.red.shade100,
-          Colors.red.shade900,
-        ),
+    final scheme = Theme.of(context).colorScheme;
+    final (background, foreground) = switch (priority) {
+      PriorityLevel.high => (scheme.errorContainer, scheme.onErrorContainer),
       PriorityLevel.medium => (
-          Colors.orange.shade100,
-          Colors.orange.shade900,
+          scheme.tertiaryContainer,
+          scheme.onTertiaryContainer,
         ),
       PriorityLevel.low => (
-          theme.colorScheme.surfaceContainerHighest,
-          theme.colorScheme.onSurfaceVariant,
+          scheme.secondaryContainer,
+          scheme.onSecondaryContainer,
         ),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(999),
+        color: background,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         priority.label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: text,
-          fontWeight: FontWeight.w600,
-        ),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: foreground,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }

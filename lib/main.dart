@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'models/task_repository.dart';
 import 'screens/task_list_screen.dart';
+import 'theme.dart';
 
 void main() {
   runApp(const FitBulkApp());
@@ -17,17 +18,7 @@ class FitBulkApp extends StatelessWidget {
     return MaterialApp(
       title: 'FitBulk App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
-          brightness: Brightness.light,
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-        ),
-      ),
+      theme: FitBulkTheme.light(),
       home: TaskListScreen(repository: repository),
     );
   }
