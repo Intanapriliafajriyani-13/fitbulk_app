@@ -8,7 +8,7 @@ import 'package:fitbulk_app/theme.dart';
 import 'package:fitbulk_app/widgets/priority_chip.dart';
 
 void main() {
-  group('FitBulk App & Material 3 Tests', () {
+  group('FitBulk App, Material 3 & P07 Responsive Tests', () {
     testWidgets('1. Smoke test: Dashboard FitBulk merender banner & FAB dengan benar',
         (WidgetTester tester) async {
       await tester.pumpWidget(const FitBulkApp());
@@ -87,6 +87,24 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Tinggi (Wajib)'), findsOneWidget);
+    });
+
+    testWidgets('5. Responsive P07: Master-Detail aktif di layar lebar (>=1024px)',
+        (WidgetTester tester) async {
+      // Set ukuran jendela simulator ke Desktop (1200 x 800)
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(const FitBulkApp());
+      await tester.pumpAndSettle();
+
+      // Di mode desktop master-detail, VerticalDivider dan panel detail kanan aktif
+      expect(find.byType(VerticalDivider), findsOneWidget);
+      expect(find.text('Catatan / Resep Bebas Laktosa'), findsOneWidget);
     });
   });
 }

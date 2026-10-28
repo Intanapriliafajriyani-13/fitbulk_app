@@ -30,47 +30,54 @@ class TaskCardSummary extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Category Pill dengan nuansa Pink Glossy & Mocha
+        // Category Pill dengan nuansa Pink Glossy & Mocha (Flexible agar tahan di layar sempit)
         Row(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    scheme.primaryContainer,
-                    scheme.secondaryContainer,
+            Flexible(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      scheme.primaryContainer,
+                      scheme.secondaryContainer,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: scheme.primary.withValues(alpha: 0.2),
+                    width: 0.8,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ExcludeSemantics(
+                      child: Icon(
+                        _getCategoryIcon(task.category),
+                        size: 13,
+                        color: scheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        task.category.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          color: scheme.onPrimaryContainer,
+                          letterSpacing: 0.1,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: scheme.primary.withValues(alpha: 0.2),
-                  width: 0.8,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ExcludeSemantics(
-                    child: Icon(
-                      _getCategoryIcon(task.category),
-                      size: 13,
-                      color: scheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Text(
-                    task.category.label,
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                      color: scheme.onPrimaryContainer,
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
