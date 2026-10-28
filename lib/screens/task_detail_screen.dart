@@ -5,12 +5,8 @@ import '../models/task_repository.dart';
 import '../widgets/due_date_label.dart';
 import '../widgets/priority_chip.dart';
 
-/// Layar Detail Target Bulking (Layar ke-2 dari 3 screen utama).
-///
-/// Menggunakan layout adaptif berbasis ruang:
-/// `Center + ConstrainedBox(maxWidth: 600)` sehingga di ponsel potret
-/// mengisi layar penuh, sedangkan di tablet/layar lebar berhenti di 600dp.
-/// State lokal dikelola dengan `setState`.
+/// Layar Detail Target Bulking (Layar 2):
+/// Tampilan Modern dengan Nuansa Pink Glossy 3D, Putih, Cokelat, dan Moka.
 class TaskDetailScreen extends StatefulWidget {
   const TaskDetailScreen({
     super.key,
@@ -51,17 +47,36 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       builder: (dialogContext) {
         final scheme = Theme.of(dialogContext).colorScheme;
         return AlertDialog(
-          title: const Text('Hapus target bulking?'),
-          content: Text('Target "${_task.title}" akan dihapus dari daftar.'),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          title: Text(
+            'Hapus target bulking?',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: scheme.onSurface,
+            ),
+          ),
+          content: Text(
+            'Target "${_task.title}" akan dihapus dari daftar.',
+            style: TextStyle(color: scheme.onSurfaceVariant),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Batal'),
+              child: Text(
+                'Batal',
+                style: TextStyle(color: scheme.onSurfaceVariant),
+              ),
             ),
             FilledButton.tonal(
               style: FilledButton.styleFrom(
                 backgroundColor: scheme.errorContainer,
                 foregroundColor: scheme.onErrorContainer,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
               onPressed: () => Navigator.pop(dialogContext, true),
               child: const Text('Hapus'),
@@ -91,6 +106,36 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     }
   }
 
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFF8BBD0).withValues(alpha: 0.5),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF8D6E63).withValues(alpha: 0.07),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.9),
+            blurRadius: 2,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        child: child,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -98,68 +143,88 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (didPop, result) {
-        // Did pop automatically
-      },
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back_rounded),
+            color: scheme.onSurface,
             onPressed: () => Navigator.of(context).pop(_changed),
           ),
-          title: const Text('Detail Target Bulking'),
+          title: Text(
+            'Detail Target Bulking',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: scheme.onSurface,
+            ),
+          ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Icons.delete_outline_rounded),
               tooltip: 'Hapus Target',
+              color: scheme.error,
               onPressed: _deleteTask,
             ),
           ],
         ),
         body: Center(
-          // Breakpoint berbasis ruang: di ponsel potret Center + maxWidth 600
-          // tidak berpengaruh (konten mengisi layar), di tablet/landscape
-          // konten berhenti di 600 dp dan tetap rapi di tengah.
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               children: [
-                // Header Card: Kategori & Status
-                Card(
+                // 1. Header Card: Kategori & Judul dengan Aksen Pink 3D
+                _buildCard(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(18),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            ExcludeSemantics(
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: scheme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(8),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFFFF4081),
+                                    Color(0xFFD81B60),
+                                  ],
                                 ),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFD81B60)
+                                        .withValues(alpha: 0.35),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: ExcludeSemantics(
                                 child: Icon(
                                   _getCategoryIcon(_task.category),
-                                  color: scheme.onPrimaryContainer,
+                                  color: Colors.white,
+                                  size: 22,
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     _task.category.label,
-                                    style: theme.textTheme.labelMedium?.copyWith(
+                                    style:
+                                        theme.textTheme.labelMedium?.copyWith(
                                       color: scheme.primary,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.2,
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
+                                  const SizedBox(height: 4),
                                   Wrap(
                                     spacing: 8,
                                     runSpacing: 4,
@@ -177,95 +242,158 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                             ),
                           ],
                         ),
-                        const Divider(height: 24),
+                        const SizedBox(height: 16),
+                        Divider(
+                          height: 1,
+                          color: const Color(0xFFD7CCC8).withValues(alpha: 0.4),
+                        ),
+                        const SizedBox(height: 14),
                         Text(
                           _task.title,
                           style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            decoration: _task.isCompleted
-                                ? TextDecoration.lineThrough
-                                : null,
+                            fontWeight: FontWeight.w800,
                             color: _task.isCompleted
                                 ? scheme.onSurfaceVariant
                                 : scheme.onSurface,
+                            decoration: _task.isCompleted
+                                ? TextDecoration.lineThrough
+                                : null,
+                            decorationColor: scheme.onSurfaceVariant,
+                            height: 1.3,
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
-                // Card Toggle Status Penyelesaian
-                Card(
+                // 2. Toggle Status Penyelesaian
+                _buildCard(
                   child: CheckboxListTile(
                     value: _task.isCompleted,
                     onChanged: _toggleStatus,
+                    activeColor: scheme.primary,
+                    checkColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 6,
+                    ),
                     title: Text(
                       _task.isCompleted
                           ? 'Target Selesai Tercapai'
                           : 'Target Belum Selesai',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
                       ),
                     ),
                     subtitle: Text(
                       _task.isCompleted
                           ? 'Ketuk untuk menandai belum selesai'
-                          : 'Centang jika sudah mengonsumsi/menyelesaikan sesi ini',
+                          : 'Centang jika sudah mengonsumsi atau menyelesaikan target ini',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
-                    secondary: Icon(
-                      _task.isCompleted
-                          ? Icons.check_circle
-                          : Icons.radio_button_unchecked,
-                      color: _task.isCompleted ? scheme.primary : scheme.outline,
+                    secondary: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: _task.isCompleted
+                            ? const Color(0xFFFCE4EC)
+                            : const Color(0xFFEFEBE9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        _task.isCompleted
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked_rounded,
+                        color: _task.isCompleted
+                            ? scheme.primary
+                            : scheme.outline,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
-                // Card Nutrisi Khas FitBulk
+                // 3. Card Nutrisi 3D Glossy (Kalori Mocha Latte & Protein Pink Gloss)
                 if ((_task.calories != null && _task.calories! > 0) ||
                     (_task.protein != null && _task.protein! > 0))
-                  Card(
+                  _buildCard(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(18),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Informasi Nutrisi FitBulk',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Row(
+                            children: [
+                              Icon(Icons.pie_chart_outline_rounded,
+                                  size: 18, color: scheme.primary),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Informasi Nutrisi FitBulk',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: scheme.onSurface,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 14),
                           Row(
                             children: [
                               if (_task.calories != null && _task.calories! > 0)
                                 Expanded(
                                   child: Container(
-                                    padding: const EdgeInsets.all(12),
+                                    padding: const EdgeInsets.all(14),
                                     decoration: BoxDecoration(
                                       color: scheme.secondaryContainer,
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1.5,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFF8D6E63)
+                                              .withValues(alpha: 0.08),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'Kalori',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: scheme.onSecondaryContainer,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.local_fire_department,
+                                              size: 16,
+                                              color: scheme.tertiary,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Kalori',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color:
+                                                    scheme.onSecondaryContainer,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: 6),
                                         Text(
                                           '${_task.calories} kcal',
                                           style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w900,
                                             color: scheme.onSecondaryContainer,
                                           ),
                                         ),
@@ -273,33 +401,66 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                                     ),
                                   ),
                                 ),
-                              if ((_task.calories != null && _task.calories! > 0) &&
+                              if ((_task.calories != null &&
+                                      _task.calories! > 0) &&
                                   (_task.protein != null && _task.protein! > 0))
                                 const SizedBox(width: 12),
                               if (_task.protein != null && _task.protein! > 0)
                                 Expanded(
                                   child: Container(
-                                    padding: const EdgeInsets.all(12),
+                                    padding: const EdgeInsets.all(14),
                                     decoration: BoxDecoration(
-                                      color: scheme.primaryContainer,
-                                      borderRadius: BorderRadius.circular(10),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Color(0xFFFFF0F5),
+                                          Color(0xFFFCE4EC),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 1.5,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: scheme.primary
+                                              .withValues(alpha: 0.1),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ],
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'Protein Bersih',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: scheme.onPrimaryContainer,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.fitness_center,
+                                              size: 16,
+                                              color: scheme.primary,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Protein Bersih',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color:
+                                                    scheme.onPrimaryContainer,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: 6),
                                         Text(
                                           '${_task.protein} g',
                                           style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w900,
                                             color: scheme.onPrimaryContainer,
                                           ),
                                         ),
@@ -313,29 +474,37 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       ),
                     ),
                   ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
-                // Card Catatan & Komposisi Bebas Laktosa
-                Card(
+                // 4. Catatan Bebas Laktosa
+                _buildCard(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(18),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Catatan & Resep Bebas Laktosa',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            Icon(Icons.notes_rounded,
+                                size: 18, color: scheme.secondary),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Catatan & Resep Bebas Laktosa',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: scheme.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 10),
                         Text(
                           _task.note?.isNotEmpty == true
                               ? _task.note!
                               : 'Tidak ada catatan komposisi tambahan.',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: scheme.onSurfaceVariant,
-                            height: 1.4,
+                            height: 1.5,
                           ),
                         ),
                       ],
@@ -344,17 +513,27 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Tombol Hapus Destruktif
+                // 5. Tombol Hapus dengan Outline Halus
                 OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     foregroundColor: scheme.error,
-                    side: BorderSide(color: scheme.error),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: BorderSide(
+                      color: scheme.error.withValues(alpha: 0.5),
+                      width: 1.2,
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  icon: const Icon(Icons.delete_outline),
-                  label: const Text('Hapus Target Bulking Ini'),
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  label: const Text(
+                    'Hapus Target Bulking Ini',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   onPressed: _deleteTask,
                 ),
+                const SizedBox(height: 16),
               ],
             ),
           ),

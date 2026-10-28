@@ -4,13 +4,8 @@ import '../models/task.dart';
 import '../models/task_repository.dart';
 import '../widgets/priority_selector.dart';
 
-/// Layar Tambah Target Bulking (Layar ke-3 dari 3 screen utama).
-///
-/// Menerapkan:
-/// - Layout adaptif: `Center + ConstrainedBox(maxWidth: 600)`
-/// - Form dengan validasi, state error, text scaling tahan (RichText)
-/// - Siklus hidup FocusNode dan TextEditingController yang dibersihkan di `dispose()`
-/// - State dikelola dengan `setState`
+/// Layar Tambah Target Bulking (Layar 3):
+/// Tampilan Modern dengan Nuansa Pink Glossy 3D, Putih, Cokelat, dan Moka.
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key, required this.repository});
 
@@ -103,7 +98,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tambah Agenda Bulking'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          color: scheme.onSurface,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          'Tambah Agenda Bulking',
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
+            color: scheme.onSurface,
+          ),
+        ),
       ),
       body: Center(
         child: ConstrainedBox(
@@ -111,30 +117,67 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           child: Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               children: [
-                // 1. Header Banner Menggunakan RichText Khas FitBulk
+                // 1. Header Banner 3D Glossy Pink & Moca
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(16),
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: scheme.primaryContainer.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: scheme.primary.withValues(alpha: 0.3),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFFFF0F5),
+                        Color(0xFFFCE4EC),
+                        Color(0xFFEFEBE9),
+                      ],
                     ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: const Color(0xFFF8BBD0).withValues(alpha: 0.8),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF8D6E63).withValues(alpha: 0.08),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Row(
                     children: [
-                      ExcludeSemantics(
-                        child: Icon(Icons.eco, color: scheme.primary, size: 28),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFF4081), Color(0xFFD81B60)],
+                          ),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFFD81B60)
+                                  .withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: const ExcludeSemantics(
+                          child: Icon(
+                            Icons.eco_rounded,
+                            color: Colors.white,
+                            size: 22,
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 14),
                       Expanded(
                         child: Text.rich(
                           TextSpan(
                             style: TextStyle(
-                              fontSize: 13.5,
+                              fontSize: 13,
                               color: scheme.onSurface,
                               height: 1.4,
                             ),
@@ -142,8 +185,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               TextSpan(
                                 text: 'FitBulk Allergen & Muscle Guard\n',
                                 style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 14.5,
                                   color: scheme.primary,
                                 ),
                               ),
@@ -159,13 +202,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                 ),
 
-                // 2. Kategori Bulking Dropdown dengan RichText Label
+                // 2. Kategori Bulking Dropdown
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text.rich(
                     TextSpan(
                       text: 'Kategori Agenda ',
-                      style: theme.textTheme.titleSmall,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
                       children: [
                         TextSpan(
                           text: '*',
@@ -181,28 +227,33 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 DropdownButtonFormField<BulkingCategory>(
                   initialValue: _category,
                   decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.category_outlined),
                   ),
                   items: BulkingCategory.values.map((cat) {
                     return DropdownMenuItem(
                       value: cat,
-                      child: Text(cat.label),
+                      child: Text(
+                        cat.label,
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
                     );
                   }).toList(),
                   onChanged: (val) {
                     if (val != null) setState(() => _category = val);
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-                // 3. Nama Agenda / Menu Makanan dengan RichText Label
+                // 3. Nama Agenda / Menu Makanan
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text.rich(
                     TextSpan(
                       text: 'Nama Tugas / Menu / Latihan ',
-                      style: theme.textTheme.titleSmall,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
                       children: [
                         TextSpan(
                           text: '*',
@@ -226,13 +277,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   decoration: const InputDecoration(
                     hintText: 'Misal: Dada Ayam 200g + Nasi Merah',
                     helperText: 'Minimal 3 karakter',
-                    prefixIcon: Icon(Icons.title),
-                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.title_rounded),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-                // 4. Baris Kalori & Protein (Fitur Khusus FitBulk)
+                // 4. Baris Nutrisi: Kalori Mocha & Protein Pink
                 Row(
                   children: [
                     Expanded(
@@ -244,7 +294,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             child: Text.rich(
                               TextSpan(
                                 text: 'Target Kalori ',
-                                style: theme.textTheme.titleSmall,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: scheme.onSurface,
+                                ),
                                 children: [
                                   TextSpan(
                                     text: '(kcal)',
@@ -265,8 +318,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                                 _proteinFocus.requestFocus(),
                             decoration: const InputDecoration(
                               hintText: 'Misal: 550',
-                              prefixIcon: Icon(Icons.local_fire_department),
-                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(
+                                Icons.local_fire_department_rounded,
+                                color: Color(0xFF8D6E63),
+                              ),
                             ),
                           ),
                         ],
@@ -282,7 +337,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             child: Text.rich(
                               TextSpan(
                                 text: 'Protein ',
-                                style: theme.textTheme.titleSmall,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: scheme.onSurface,
+                                ),
                                 children: [
                                   TextSpan(
                                     text: '(gram)',
@@ -302,8 +360,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             onFieldSubmitted: (_) => _noteFocus.requestFocus(),
                             decoration: const InputDecoration(
                               hintText: 'Misal: 35',
-                              prefixIcon: Icon(Icons.fitness_center),
-                              border: OutlineInputBorder(),
+                              prefixIcon: Icon(
+                                Icons.fitness_center_rounded,
+                                color: Color(0xFFD81B60),
+                              ),
                             ),
                           ),
                         ],
@@ -311,15 +371,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 18),
 
-                // 5. Catatan / Rincian Bebas Laktosa dengan RichText Label
+                // 5. Catatan / Rincian Bebas Laktosa
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text.rich(
                     TextSpan(
                       text: 'Catatan Komposisi / Allergen Guard ',
-                      style: theme.textTheme.titleSmall,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
                       children: [
                         TextSpan(
                           text: '(opsional)',
@@ -339,11 +402,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     hintText:
                         'Tuliskan bahan pengganti non-dairy atau beban angkatan...',
                     alignLabelWithHint: true,
-                    prefixIcon: Icon(Icons.notes),
-                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.notes_rounded),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 22),
 
                 // 6. Pemilih Prioritas
                 Padding(
@@ -351,7 +413,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   child: Text.rich(
                     TextSpan(
                       text: 'Tingkat Prioritas ',
-                      style: theme.textTheme.titleSmall,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: scheme.onSurface,
+                      ),
                       children: [
                         TextSpan(
                           text: '— tentukan urgensi target harian',
@@ -367,23 +432,23 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   selected: _priority,
                   onSelected: (p) => setState(() => _priority = p),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 22),
 
                 // 7. Tenggat Target Waktu
                 InkWell(
                   onTap: _pickDueDate,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(14),
                   child: InputDecorator(
                     decoration: const InputDecoration(
                       labelText: 'Tenggat Target (opsional)',
-                      prefixIcon: Icon(Icons.event),
-                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.event_rounded),
                     ),
                     child: Text(
                       _dueDate == null
                           ? 'Pilih tanggal target'
                           : '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}',
                       style: TextStyle(
+                        fontWeight: FontWeight.w600,
                         color: _dueDate == null
                             ? scheme.onSurfaceVariant
                             : scheme.onSurface,
@@ -393,20 +458,69 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
                 const SizedBox(height: 32),
 
-                FilledButton.icon(
-                  onPressed: _saving ? null : _submit,
-                  icon: _saving
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.check_circle_outline),
-                  label: Text(_saving ? 'Menyimpan…' : 'Simpan ke FitBulk Tracker'),
-                  style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                // Tombol Simpan 3D Glossy Pink
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFFFF4081),
+                        Color(0xFFD81B60),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFD81B60).withValues(alpha: 0.35),
+                        blurRadius: 14,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(18),
+                      onTap: _saving ? null : _submit,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (_saving)
+                              const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            else ...[
+                              const Icon(
+                                Icons.check_circle_outline_rounded,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Simpan ke FitBulk Tracker',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
