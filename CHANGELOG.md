@@ -8,7 +8,7 @@ Semua pencapaian setiap Gate dicatat dalam format resmi yang ditentukan:
 
 ---
 
-## [gate-1] — Fondasi (Minggu P07 / Capstone Gate 1)
+## [G-1] — Fondasi (Minggu P07 / Capstone Gate 1)
 - **Tautan Video Demo (5 Menit, Unlisted):** [Tautan Video Demo FitBulk Gate 1](https://youtu.be/fitbulk-gate1-demo) *(ganti dengan URL video YouTube unlisted Anda)*
 - **Jadi:**
   1. **Satu Alur Utama Utuh (End-to-End):** Pengguna dapat membuka dashboard FitBulk, menekan tombol `Tambah Target`, mengisi agenda nutrisi/workout bebas laktosa (nama, kategori, target kalori, target protein, catatan komposisi, prioritas, dan tenggat waktu), melihat data langsung terakumulasi pada banner nutrisi harian, membuka layar detail, menandai target selesai (dengan efek strikethrough & animated opacity), serta menghapus target dengan konfirmasi dialog modal M3. Alur ini teruji lancar dijalankan berulang kali tanpa crash.

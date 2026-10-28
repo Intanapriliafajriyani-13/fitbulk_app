@@ -10,7 +10,7 @@
 - **Domain Capstone:** *Health & Wellness* (Pelacak Kebugaran & Nutrisi Bebas Alergen Laktosa)
 - **Nama Mahasiswa:** Intan Aprilia Fajriyani
 - **Tautan Repositori GitHub:** [https://github.com/Intanapriliafajriyani-13/fitbulk_app.git](https://github.com/Intanapriliafajriyani-13/fitbulk_app.git)
-- **Tag Rilis Resmi Gate 1:** `gate-1` *(juga tersedia alias `G-1`)*
+- **Tag Rilis Resmi:** `G-1` *(alias `gate-1`)*
 - **Tautan Video Demo (5 Menit, Unlisted):** [Tautan Video YouTube Unlisted](https://youtu.be/fitbulk-gate1-demo) *(ganti dengan URL video YouTube unlisted Anda)*
 
 ---
@@ -102,7 +102,7 @@ Identitas visual terpusat pada [`lib/theme.dart`](file:///D:/INTAN/SEMESTER%207/
 - [x] Dijalankan di tablet atau jendela desktop lebar (≥1024px), layout beralih ke Master-Detail tanpa teks melar tak terbaca.
 - [x] Skala teks sistem dinaikkan ke 150%, tata letak tetap rapi dan terbaca.
 - [x] `CHANGELOG.md` sudah berisi blok `[gate-1]` lengkap dengan 4 butir resmi (**Jadi**, **Macet**, **Keputusan**, **AI**).
-- [x] Tag `gate-1` (dan alias `G-1`) sudah dibuat dan terunggah ke repositori GitHub.
+- [x] Tag `G-1` (dan alias `gate-1`) sudah dibuat dan terunggah ke repositori GitHub.
 - [x] Tautan video demo 5 menit (unlisted) sudah dicantumkan di `CHANGELOG.md`.
 
 ---
