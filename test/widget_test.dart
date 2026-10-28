@@ -1,10 +1,92 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fitbulk_app/main.dart';
+import 'package:fitbulk_app/models/task.dart';
+import 'package:fitbulk_app/models/task_repository.dart';
+import 'package:fitbulk_app/screens/task_detail_screen.dart';
+import 'package:fitbulk_app/theme.dart';
+import 'package:fitbulk_app/widgets/priority_chip.dart';
 
 void main() {
-  testWidgets('FitBulk smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(const FitBulkApp());
-    await tester.pumpAndSettle();
-    expect(find.text('FitBulk — Nutrition & Workout'), findsOneWidget);
+  group('FitBulk App & Material 3 Tests', () {
+    testWidgets('1. Smoke test: Dashboard FitBulk merender banner & FAB dengan benar',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const FitBulkApp());
+      await tester.pumpAndSettle();
+
+      // Cek AppBar & Judul Aplikasi
+      expect(find.text('FitBulk — Nutrition & Workout'), findsOneWidget);
+
+      // Cek Banner Nutrisi
+      expect(find.text('Kalori Terpenuhi'), findsOneWidget);
+      expect(find.text('Protein Masuk'), findsOneWidget);
+
+      // Cek Keberadaan FAB
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.text('Tambah Target'), findsOneWidget);
+    });
+
+    testWidgets('2. Layar Detail: Navigasi dan render detail target bulking',
+        (WidgetTester tester) async {
+      final repository = TaskRepository();
+      final task = BulkingTask(
+        id: 'test-1',
+        title: 'Dada Ayam Panggang & Quinoa',
+        note: 'Menu tinggi protein tanpa alergen susu sapi.',
+        category: BulkingCategory.meal,
+        priority: PriorityLevel.high,
+        calories: 520,
+        protein: 48,
+        dueDate: DateTime.now().add(const Duration(days: 2)),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: FitBulkTheme.light(),
+          home: TaskDetailScreen(task: task, repository: repository),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verifikasi komponen detail item
+      expect(find.text('Detail Target Bulking'), findsOneWidget);
+      expect(find.text('Dada Ayam Panggang & Quinoa'), findsOneWidget);
+      expect(find.text('Informasi Nutrisi FitBulk'), findsOneWidget);
+      expect(find.text('520 kcal'), findsOneWidget);
+      expect(find.text('48 g'), findsOneWidget);
+      expect(find.text('Menu tinggi protein tanpa alergen susu sapi.'),
+          findsOneWidget);
+    });
+
+    testWidgets('3. Navigasi 3 Layar: Dari Daftar -> Buka Form Tambah Target',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const FitBulkApp());
+      await tester.pumpAndSettle();
+
+      // Tekan FAB Tambah Target
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      // Verifikasi layar Tambah Target terbuka (Screen ke-3)
+      expect(find.text('Tambah Agenda Bulking'), findsOneWidget);
+      expect(find.byType(Form), findsOneWidget);
+      expect(find.textContaining('Kategori Agenda'), findsOneWidget);
+      expect(find.textContaining('Nama Tugas'), findsOneWidget);
+    });
+
+    testWidgets('4. Material 3 PriorityChip menggunakan pasangan container M3',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: FitBulkTheme.light(),
+          home: const Scaffold(
+            body: PriorityChip(priority: PriorityLevel.high),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Tinggi (Wajib)'), findsOneWidget);
+    });
   });
 }
